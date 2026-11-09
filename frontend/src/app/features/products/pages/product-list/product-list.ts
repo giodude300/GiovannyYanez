@@ -23,13 +23,14 @@ export class ProductListComponent implements OnInit {
 
     protected readonly activeMenu = signal<string | null>(null);
     protected readonly menuPosition = signal<{ top: number; left: number } | null>(null);
+    protected readonly selectedProduct = signal<Product | null>(null);
+    protected readonly isDeleting = signal(false);
+    protected readonly deleteError = signal<string | null>(null);
     protected readonly filteredProducts = computed(() => {
         const search = this.normalizeText(this.searchTerm());
-
         if (!search) {
             return this.products();
         }
-
         return this.products().filter((product) => {
             const searchableFields = [product.id, product.name, product.description];
             return searchableFields.some((field) => this.normalizeText(field).includes(search));
@@ -118,13 +119,11 @@ export class ProductListComponent implements OnInit {
         const button = event.currentTarget as HTMLElement;
         const buttonRect = button.getBoundingClientRect();
         const menuWidth = 130;
-        const menuHeight = 48;
+        const menuHeight = 88;
         const viewportPadding = 8;
         const spaceBelow = window.innerHeight - buttonRect.bottom;
         const openAbove = spaceBelow < menuHeight + viewportPadding;
-
         const top = openAbove ? Math.max(viewportPadding, buttonRect.top - menuHeight - 4) : Math.min(window.innerHeight - menuHeight - viewportPadding, buttonRect.bottom + 4);
-
         const left = Math.max(viewportPadding, Math.min(buttonRect.right - menuWidth, window.innerWidth - menuWidth - viewportPadding));
 
         this.menuPosition.set({ top, left });
@@ -134,6 +133,46 @@ export class ProductListComponent implements OnInit {
     protected closeMenu(): void {
         this.activeMenu.set(null);
         this.menuPosition.set(null);
+    }
+
+    protected openDeleteConfirmation(product: Product): void {
+        this.closeMenu();
+        this.deleteError.set(null);
+        this.selectedProduct.set(product);
+    }
+
+    protected closeDeleteConfirmation(): void {
+        if (this.isDeleting()) {
+            return;
+        }
+        this.selectedProduct.set(null);
+        this.deleteError.set(null);
+    }
+
+    protected confirmDelete(): void {
+        const product = this.selectedProduct();
+        if (!product || this.isDeleting()) {
+            return;
+        }
+        this.isDeleting.set(true);
+        this.deleteError.set(null);
+        this.productService.deleteProduct(product.id).subscribe({
+            next: () => {
+                this.products.update((products) => products.filter((item) => item.id !== product.id));
+                this.selectedProduct.set(null);
+                this.isDeleting.set(false);
+                const remainingPages = Math.ceil(this.filteredProducts().length / this.pageSize());
+                if (remainingPages === 0) {
+                    this.currentPage.set(1);
+                } else if (this.currentPage() > remainingPages) {
+                    this.currentPage.set(remainingPages);
+                }
+            },
+            error: () => {
+                this.deleteError.set('No fue posible eliminar el producto. Intenta nuevamente.');
+                this.isDeleting.set(false);
+            },
+        });
     }
 
     protected retry(): void {

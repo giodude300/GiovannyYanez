@@ -583,7 +583,10 @@ td.actions-column {
 .context-menu {
     position: fixed;
     z-index: 2000;
-    min-width: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 140px;
     padding: 5px;
     border: 1px solid #e5e7eb;
     border-radius: 5px;
@@ -592,6 +595,8 @@ td.actions-column {
 }
 
 .context-menu button {
+    display: block;
+    flex: 0 0 auto;
     width: 100%;
     padding: 10px 12px;
     border: none;
@@ -623,4 +628,115 @@ td.actions-column {
 .product-card-actions {
     align-self: flex-start;
     flex-shrink: 0;
+}
+
+/* F6 - Product deletion */
+
+.context-menu .delete-menu-button {
+    color: #c62828;
+}
+
+.context-menu .delete-menu-button:hover {
+    background: #fff1f0;
+    color: #b71c1c;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.58);
+}
+
+.delete-modal {
+    display: grid;
+    grid-template-rows: 1fr 150px;
+    width: 100%;
+    max-width: 735px;
+    min-height: 386px;
+    border-radius: 13px;
+    background: #ffffff;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+}
+
+.delete-modal-content {
+    padding: 62px 50px 30px;
+}
+
+.delete-modal-content p {
+    margin: 0;
+    color: #111111;
+    font-size: 25px;
+    line-height: 1.2;
+}
+
+.delete-modal-content .delete-error {
+    margin-top: 14px;
+    color: #c62828;
+    font-size: 13px;
+}
+
+.delete-modal-actions {
+    display: flex;
+    gap: 25px;
+    padding: 36px 50px;
+    border-top: 1px solid #e5e5e5;
+}
+
+.delete-modal-actions button {
+    flex: 1;
+    min-width: 0;
+    min-height: 75px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.cancel-delete-button {
+    border-color: #d9deea !important;
+    background: #e9ebf2;
+    color: #193878;
+}
+
+.confirm-delete-button {
+    background: #ffeb70;
+    color: #193878;
+}
+
+.delete-modal-actions button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    .delete-modal {
+        grid-template-rows: 1fr auto;
+        min-height: 300px;
+    }
+
+    .delete-modal-content {
+        padding: 35px 25px;
+    }
+
+    .delete-modal-content p {
+        font-size: 20px;
+    }
+
+    .delete-modal-actions {
+        flex-direction: column-reverse;
+        gap: 12px;
+        padding: 20px 25px;
+    }
+
+    .delete-modal-actions button {
+        min-height: 55px;
+        font-size: 16px;
+    }
 }

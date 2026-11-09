@@ -9,6 +9,10 @@ interface ProductResponse {
     data: Product;
 }
 
+interface DeleteProductResponse {
+    message: string;
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -30,5 +34,9 @@ export class ProductService {
 
     updateProduct(id: string, product: Product): Observable<ProductResponse> {
         return this.http.put<ProductResponse>(`${this.apiUrl}/${encodeURIComponent(id)}`, product);
+    }
+
+    deleteProduct(id: string): Observable<DeleteProductResponse> {
+        return this.http.delete<DeleteProductResponse>(`${this.apiUrl}/${encodeURIComponent(id)}`);
     }
 }

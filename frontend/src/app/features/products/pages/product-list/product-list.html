@@ -135,6 +135,7 @@
                                             @if (activeMenu() === product.id) {
                                                 <div class="context-menu" [style.top.px]="menuPosition()?.top" [style.left.px]="menuPosition()?.left">
                                                     <button type="button" [routerLink]="['/products/edit', product.id]" (click)="closeMenu()">Editar</button>
+                                                    <button type="button" class="delete-menu-button" (click)="openDeleteConfirmation(product)">Eliminar</button>
                                                 </div>
                                             }
                                         </div>
@@ -150,7 +151,6 @@
                         <article class="product-card">
                             <div class="product-card-header">
                                 <img class="product-logo" [src]="product.logo" [alt]="'Logo de ' + product.name" />
-
                                 <h3>{{ product.name }}</h3>
                                 <div class="product-card-actions">
                                     <button
@@ -165,17 +165,16 @@
                                     @if (activeMenu() === product.id) {
                                         <div class="context-menu" [style.top.px]="menuPosition()?.top" [style.left.px]="menuPosition()?.left">
                                             <button type="button" [routerLink]="['/products/edit', product.id]" (click)="closeMenu()">Editar</button>
+                                            <button type="button" class="delete-menu-button" (click)="openDeleteConfirmation(product)">Eliminar</button>
                                         </div>
                                     }
                                 </div>
                             </div>
-
                             <div class="product-card-body">
                                 <div class="product-card-field">
                                     <span>Descripción</span>
                                     <p>{{ product.description }}</p>
                                 </div>
-
                                 <div class="product-card-dates">
                                     <div class="product-card-field">
                                         <span>Fecha de liberación</span>
@@ -191,11 +190,9 @@
                     }
                 </div>
             }
-
             <div class="table-footer">
                 @if (!isLoading() && !errorMessage()) {
                     <span>Mostrando {{ startIndex() }}–{{ endIndex() }} de {{ filteredProducts().length }} resultados</span>
-
                     <div class="pagination">
                         <button type="button" class="pagination-button" aria-label="Página anterior" [disabled]="currentPage() <= 1" (click)="previousPage()">Anterior</button>
                         <span class="pagination-info">{{ currentPage() }} / {{ totalPages() }}</span>
@@ -204,7 +201,6 @@
                         </button>
                     </div>
                 }
-
                 <label>
                     <select aria-label="Cantidad de registros" [value]="pageSize()" (change)="onPageSizeChange($event)">
                         <option value="5">5</option>
@@ -216,3 +212,31 @@
         </section>
     </main>
 </div>
+
+@if (selectedProduct(); as product) {
+    <div class="modal-backdrop" (click)="closeDeleteConfirmation()">
+        <section
+            class="delete-modal"
+            role="alertdialog"
+            aria-modal="true"
+            aria-label="Confirmar eliminación"
+            aria-describedby="delete-modal-description"
+            (click)="$event.stopPropagation()"
+        >
+            <div class="delete-modal-content">
+                <p id="delete-modal-description">¿Estas seguro de eliminar el producto {{ product.name }}?</p>
+
+                @if (deleteError()) {
+                    <p class="delete-error" role="alert">{{ deleteError() }}</p>
+                }
+            </div>
+            <div class="delete-modal-actions">
+                <button type="button" class="cancel-delete-button" [disabled]="isDeleting()" (click)="closeDeleteConfirmation()">Cancelar</button>
+
+                <button type="button" class="confirm-delete-button" [disabled]="isDeleting()" (click)="confirmDelete()">
+                    {{ isDeleting() ? 'Confirmando...' : 'Confirmar' }}
+                </button>
+            </div>
+        </section>
+    </div>
+}
