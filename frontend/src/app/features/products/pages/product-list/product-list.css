@@ -255,6 +255,60 @@ td {
     cursor: default;
 }
 
+.table-footer {
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pagination-button {
+    min-width: 75px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #333333;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.pagination-button:hover:not(:disabled) {
+    border-color: #193878;
+    color: #193878;
+}
+
+.pagination-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    min-width: 35px;
+    text-align: center;
+    font-size: 12px;
+}
+
+@media (max-width: 480px) {
+    .table-footer {
+        justify-content: center;
+    }
+
+    .table-footer > span {
+        width: 100%;
+        text-align: center;
+    }
+
+    .pagination {
+        order: 2;
+    }
+}
+
 /* Mobile cards */
 
 .products-mobile {
