@@ -9,10 +9,65 @@
         <section class="products-container">
             <div class="table-toolbar">
                 <input type="text" placeholder="Search..." aria-label="Buscar productos" [value]="searchTerm()" (input)="onSearch($event)" />
+                <button type="button" class="add-button" routerLink="/products/new">Agregar</button>
             </div>
 
             @if (isLoading()) {
-                <div class="loading-state">Cargando productos...</div>
+                <div class="table-wrapper skeleton-desktop" aria-label="Cargando productos">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Logo</th>
+                                <th>Nombre del producto</th>
+                                <th>Descripción</th>
+                                <th>Fecha de liberación</th>
+                                <th>Fecha de reestructuración</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @for (item of [1, 2, 3, 4, 5]; track item) {
+                                <tr class="skeleton-row">
+                                    <td><span class="skeleton skeleton-logo"></span></td>
+                                    <td><span class="skeleton skeleton-text"></span></td>
+                                    <td><span class="skeleton skeleton-text skeleton-text-wide"></span></td>
+                                    <td><span class="skeleton skeleton-text skeleton-text-date"></span></td>
+                                    <td><span class="skeleton skeleton-text skeleton-text-date"></span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="products-mobile skeleton-mobile" aria-label="Cargando productos">
+                    @for (item of [1, 2, 3]; track item) {
+                        <article class="product-card skeleton-card">
+                            <div class="product-card-header">
+                                <span class="skeleton skeleton-logo"></span>
+                                <span class="skeleton skeleton-text skeleton-title"></span>
+                            </div>
+
+                            <div class="product-card-body">
+                                <div class="product-card-field">
+                                    <span>Descripción</span>
+                                    <span class="skeleton skeleton-text skeleton-text-wide"></span>
+                                </div>
+
+                                <div class="product-card-dates">
+                                    <div class="product-card-field">
+                                        <span>Fecha de liberación</span>
+                                        <span class="skeleton skeleton-text skeleton-text-date"></span>
+                                    </div>
+
+                                    <div class="product-card-field">
+                                        <span>Fecha de reestructuración</span>
+                                        <span class="skeleton skeleton-text skeleton-text-date"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                </div>
             } @else if (errorMessage()) {
                 <div class="error-state" role="alert">
                     <p>{{ errorMessage() }}</p>

@@ -1,0 +1,126 @@
+<div class="page-container">
+    @if (isSubmitting.value) {
+        <div class="processing-overlay" role="status" aria-live="polite">
+            <div class="processing-card">
+                <div class="processing-spinner"></div>
+                <p>Creando producto...</p>
+                <span>Por favor, espera un momento.</span>
+            </div>
+        </div>
+    }
+    <header class="header">
+        <div class="brand">
+            <img class="brand-logo" src="assets/images/banco-logo.png" alt="Banco" />
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="form-container">
+            <button type="button" class="back-button" (click)="goBack()">← Volver</button>
+            <h1>Formulario de Registro</h1>
+            <form [formGroup]="productForm" (ngSubmit)="submitForm()" novalidate>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="id">ID</label>
+                        <input id="id" type="text" formControlName="id" [class.invalid]="isFieldInvalid('id')" autocomplete="off" />
+                        @if (getFieldError('id')) {
+                            <span class="field-error">
+                                {{ getFieldError('id') }}
+                            </span>
+                        }
+                    </div>
+
+                    <div class="form-field">
+                        <label for="name">Nombre</label>
+                        <input id="name" type="text" formControlName="name" [class.invalid]="isFieldInvalid('name')" />
+                        @if (getFieldError('name')) {
+                            <span class="field-error">
+                                {{ getFieldError('name') }}
+                            </span>
+                        }
+                    </div>
+
+                    <div class="form-field">
+                        <label for="description">Descripción</label>
+                        <input id="description" type="text" formControlName="description" [class.invalid]="isFieldInvalid('description')" />
+                        @if (getFieldError('description')) {
+                            <span class="field-error">
+                                {{ getFieldError('description') }}
+                            </span>
+                        }
+                    </div>
+
+                    <div class="form-field">
+                        <label for="logo">Logo</label>
+                        <input
+                            id="logo"
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp"
+                            (change)="onLogoSelected($event)"
+                            [class.invalid]="isFieldInvalid('logo') || !!logoError"
+                        />
+                        @if (logoPreview) {
+                            <div class="logo-preview">
+                                <img [src]="logoPreview" alt="Vista previa del logo" />
+                            </div>
+                        }
+                        @if (logoError) {
+                            <span class="field-error">
+                                {{ logoError }}
+                            </span>
+                        } @else if (getFieldError('logo')) {
+                            <span class="field-error">
+                                {{ getFieldError('logo') }}
+                            </span>
+                        }
+                        <span class="field-hint">PNG, JPG o WEBP. Tamaño máximo: 5 MB.</span>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="date_release">Fecha Liberación</label>
+                        <input id="date_release" type="date" formControlName="date_release" [class.invalid]="isFieldInvalid('date_release')" />
+                        @if (getFieldError('date_release')) {
+                            <span class="field-error">
+                                {{ getFieldError('date_release') }}
+                            </span>
+                        }
+                    </div>
+
+                    <div class="form-field">
+                        <label for="date_revision">Fecha Revisión</label>
+                        <input id="date_revision" type="date" formControlName="date_revision" readonly />
+                        @if (getFieldError('date_revision')) {
+                            <span class="field-error">
+                                {{ getFieldError('date_revision') }}
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                @if (getFormError()) {
+                    <p class="form-error">
+                        {{ getFormError() }}
+                    </p>
+                }
+                @if (successMessage.value) {
+                    <p class="success-message" role="status">
+                        {{ successMessage.value }}
+                    </p>
+                }
+                @if (errorMessage.value) {
+                    <div class="error-toast" role="alert">
+                        <span class="error-toast-icon">!</span>
+                        <span>{{ errorMessage.value }}</span>
+                        <button type="button" class="toast-close" (click)="errorMessage.value = ''" aria-label="Cerrar mensaje">×</button>
+                    </div>
+                }
+                <div class="form-actions">
+                    <button type="button" class="reset-button" (click)="resetForm()" [disabled]="isSubmitting.value">Reiniciar</button>
+                    <button type="submit" class="submit-button" [disabled]="isSubmitting.value || productForm.pending">
+                        {{ isSubmitting.value ? 'Enviando...' : productForm.pending ? 'Verificando ID...' : 'Enviar' }}
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>

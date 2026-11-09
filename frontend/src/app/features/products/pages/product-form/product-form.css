@@ -1,0 +1,362 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #222222;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.page-container {
+    min-height: 100vh;
+    background: #f3f4f7;
+}
+
+.header {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-logo {
+    display: block;
+    width: 150px;
+    height: 45px;
+    object-fit: contain;
+}
+
+.main-content {
+    min-height: calc(100vh - 80px);
+    padding: 50px 16px;
+    background: #f3f4f7;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 28px 36px 36px;
+    background: #ffffff;
+}
+
+h1 {
+    margin: 0 0 30px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid #cccccc;
+    color: #222222;
+    font-size: 24px;
+    text-align: center;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 28px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-field label {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.form-field input {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #999999;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #333333;
+    font-family: inherit;
+    font-size: 13px;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.form-field input:focus {
+    outline: none;
+    border-color: #193878;
+    box-shadow: 0 0 0 2px rgba(25, 56, 120, 0.1);
+}
+
+.form-field input:disabled,
+.form-field input:read-only {
+    background: #f2f2f2;
+    color: #777777;
+    cursor: not-allowed;
+}
+
+.form-field input[type='file'] {
+    height: auto;
+    min-height: 42px;
+    padding: 9px;
+    cursor: pointer;
+}
+
+.form-field input[type='file']::file-selector-button {
+    margin-right: 12px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    background: #e9ebf2;
+    color: #193878;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.logo-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+    padding: 8px;
+    border: 1px solid #d9dce5;
+    border-radius: 6px;
+    background: #ffffff;
+}
+
+.logo-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.field-hint {
+    color: #777777;
+    font-size: 11px;
+}
+
+.form-field input.invalid {
+    border-color: #e53935;
+}
+
+.form-field input.invalid:focus {
+    border-color: #e53935;
+    box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.1);
+}
+
+.field-error {
+    color: #e53935;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.form-error {
+    margin-top: 18px;
+    color: #e53935;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.success-message {
+    margin-top: 18px;
+    color: #2e7d32;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 64px;
+}
+
+.form-actions button {
+    min-width: 110px;
+    height: 46px;
+    border: none;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        filter 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.reset-button {
+    background: #e9ebf2;
+    color: #193878;
+}
+
+.submit-button {
+    background: #ffeb70;
+    color: #193878;
+}
+
+.form-actions button:hover:not(:disabled) {
+    filter: brightness(0.96);
+}
+
+.form-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 8px 14px;
+    border: 1px solid #d9dce5;
+    border-radius: 4px;
+    background: #e9ebf2;
+    color: #193878;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.back-button:hover {
+    filter: brightness(0.96);
+}
+
+.error-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(420px, calc(100% - 32px));
+    padding: 16px;
+    border: 1px solid #f1b8b8;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #c62828;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.error-toast-icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #e53935;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.toast-close {
+    margin-left: auto;
+    border: none;
+    background: transparent;
+    color: #777777;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .main-content {
+        padding: 28px 14px;
+    }
+
+    .form-container {
+        padding: 24px 18px;
+    }
+
+    h1 {
+        font-size: 21px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .form-actions {
+        gap: 16px;
+        margin-top: 36px;
+    }
+
+    .form-actions button {
+        flex: 1;
+    }
+
+    .error-toast {
+        top: 12px;
+        right: 16px;
+    }
+}
+
+.processing-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.processing-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: min(320px, 100%);
+    padding: 32px 24px;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+    text-align: center;
+}
+
+.processing-spinner {
+    width: 42px;
+    height: 42px;
+    border: 4px solid #e9ebf2;
+    border-top-color: #193878;
+    border-radius: 50%;
+    animation: processing-spin 0.8s linear infinite;
+}
+
+.processing-card p {
+    margin: 20px 0 6px;
+    color: #193878;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.processing-card span {
+    color: #777777;
+    font-size: 12px;
+}
+
+@keyframes processing-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

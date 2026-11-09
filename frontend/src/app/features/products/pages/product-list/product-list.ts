@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-
+import { RouterLink } from '@angular/router';
 import { Product } from '../../../../core/models/product.model';
 import { ProductService } from '../../../../core/services/product.service';
 
@@ -9,7 +9,7 @@ import { ProductService } from '../../../../core/services/product.service';
     standalone: true,
     templateUrl: './product-list.html',
     styleUrl: './product-list.css',
-    imports: [DatePipe],
+    imports: [DatePipe, RouterLink],
 })
 export class ProductListComponent implements OnInit {
     private readonly productService = inject(ProductService);

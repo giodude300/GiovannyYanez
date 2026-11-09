@@ -6,6 +6,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/products/pages/product-list/product-list').then((component) => component.ProductListComponent),
     },
     {
+        path: 'products/new',
+        loadComponent: () => import('./features/products/pages/product-form/product-form').then((component) => component.ProductFormComponent),
+    },
+    {
         path: '**',
         redirectTo: '',
     },
