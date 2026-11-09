@@ -107,6 +107,7 @@
                                         <span class="info-icon" title="Fecha de reestructuración">i</span>
                                     </span>
                                 </th>
+                                <th class="actions-column" aria-label="Acciones"></th>
                             </tr>
                         </thead>
 
@@ -120,6 +121,24 @@
                                     <td>{{ product.description }}</td>
                                     <td>{{ product.date_release | date: 'dd/MM/yyyy' }}</td>
                                     <td>{{ product.date_revision | date: 'dd/MM/yyyy' }}</td>
+                                    <td class="actions-column">
+                                        <div class="product-actions">
+                                            <button
+                                                type="button"
+                                                class="menu-button"
+                                                aria-label="Opciones del producto"
+                                                [attr.aria-expanded]="activeMenu() === product.id"
+                                                (click)="toggleMenu(product.id, $event)"
+                                            >
+                                                ⋮
+                                            </button>
+                                            @if (activeMenu() === product.id) {
+                                                <div class="context-menu" [style.top.px]="menuPosition()?.top" [style.left.px]="menuPosition()?.left">
+                                                    <button type="button" [routerLink]="['/products/edit', product.id]" (click)="closeMenu()">Editar</button>
+                                                </div>
+                                            }
+                                        </div>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -133,6 +152,22 @@
                                 <img class="product-logo" [src]="product.logo" [alt]="'Logo de ' + product.name" />
 
                                 <h3>{{ product.name }}</h3>
+                                <div class="product-card-actions">
+                                    <button
+                                        type="button"
+                                        class="menu-button"
+                                        aria-label="Opciones del producto"
+                                        [attr.aria-expanded]="activeMenu() === product.id"
+                                        (click)="toggleMenu(product.id, $event)"
+                                    >
+                                        ⋮
+                                    </button>
+                                    @if (activeMenu() === product.id) {
+                                        <div class="context-menu" [style.top.px]="menuPosition()?.top" [style.left.px]="menuPosition()?.left">
+                                            <button type="button" [routerLink]="['/products/edit', product.id]" (click)="closeMenu()">Editar</button>
+                                        </div>
+                                    }
+                                </div>
                             </div>
 
                             <div class="product-card-body">
@@ -146,7 +181,6 @@
                                         <span>Fecha de liberación</span>
                                         <p>{{ product.date_release | date: 'dd/MM/yyyy' }}</p>
                                     </div>
-
                                     <div class="product-card-field">
                                         <span>Fecha de reestructuración</span>
                                         <p>{{ product.date_revision | date: 'dd/MM/yyyy' }}</p>
@@ -164,9 +198,7 @@
 
                     <div class="pagination">
                         <button type="button" class="pagination-button" aria-label="Página anterior" [disabled]="currentPage() <= 1" (click)="previousPage()">Anterior</button>
-
                         <span class="pagination-info">{{ currentPage() }} / {{ totalPages() }}</span>
-
                         <button type="button" class="pagination-button" aria-label="Página siguiente" [disabled]="currentPage() >= totalPages()" (click)="nextPage()">
                             Siguiente
                         </button>

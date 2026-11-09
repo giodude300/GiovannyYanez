@@ -20,6 +20,9 @@ export class ProductListComponent implements OnInit {
     protected readonly errorMessage = signal<string | null>(null);
     protected readonly pageSize = signal(5);
     protected readonly currentPage = signal(1);
+
+    protected readonly activeMenu = signal<string | null>(null);
+    protected readonly menuPosition = signal<{ top: number; left: number } | null>(null);
     protected readonly filteredProducts = computed(() => {
         const search = this.normalizeText(this.searchTerm());
 
@@ -104,6 +107,33 @@ export class ProductListComponent implements OnInit {
         if (this.currentPage() < this.totalPages()) {
             this.currentPage.update((page) => page + 1);
         }
+    }
+
+    protected toggleMenu(productId: string, event: MouseEvent): void {
+        if (this.activeMenu() === productId) {
+            this.closeMenu();
+            return;
+        }
+
+        const button = event.currentTarget as HTMLElement;
+        const buttonRect = button.getBoundingClientRect();
+        const menuWidth = 130;
+        const menuHeight = 48;
+        const viewportPadding = 8;
+        const spaceBelow = window.innerHeight - buttonRect.bottom;
+        const openAbove = spaceBelow < menuHeight + viewportPadding;
+
+        const top = openAbove ? Math.max(viewportPadding, buttonRect.top - menuHeight - 4) : Math.min(window.innerHeight - menuHeight - viewportPadding, buttonRect.bottom + 4);
+
+        const left = Math.max(viewportPadding, Math.min(buttonRect.right - menuWidth, window.innerWidth - menuWidth - viewportPadding));
+
+        this.menuPosition.set({ top, left });
+        this.activeMenu.set(productId);
+    }
+
+    protected closeMenu(): void {
+        this.activeMenu.set(null);
+        this.menuPosition.set(null);
     }
 
     protected retry(): void {

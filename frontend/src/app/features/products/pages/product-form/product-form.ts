@@ -1,6 +1,6 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, ViewChild, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, filter, finalize, map, Observable, of, switchMap, take, timer } from 'rxjs';
 import { Location } from '@angular/common';
@@ -19,6 +19,7 @@ export class ProductFormComponent {
     private readonly formBuilder = inject(FormBuilder);
     private readonly productService = inject(ProductService);
     private readonly router = inject(Router);
+    private readonly route = inject(ActivatedRoute);
     private readonly destroyRef = inject(DestroyRef);
     private readonly location = inject(Location);
     private readonly maxLogoSize = 5 * 1024 * 1024;
@@ -30,6 +31,14 @@ export class ProductFormComponent {
     protected readonly errorMessage = { value: '' };
     protected logoPreview = '';
     protected logoError = '';
+    protected isLogoModalOpen = false;
+    protected isEditMode = false;
+    protected isLoadingProduct = false;
+    private editingProductId = '';
+    private originalProduct: Product | null = null;
+
+    @ViewChild('logoInput')
+    private logoInput?: ElementRef<HTMLInputElement>;
 
     protected readonly productForm = this.formBuilder.group(
         {
@@ -62,6 +71,64 @@ export class ProductFormComponent {
         this.productForm.controls.date_release.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((date) => {
             this.updateRevisionDate(date);
         });
+
+        this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+            const productId = params.get('id');
+
+            if (productId) {
+                this.isEditMode = true;
+                this.editingProductId = productId;
+                this.loadProduct(productId);
+            }
+        });
+    }
+
+    private loadProduct(productId: string): void {
+        this.isLoadingProduct = true;
+        this.errorMessage.value = '';
+
+        this.productService
+            .getProducts()
+            .pipe(
+                finalize(() => {
+                    this.isLoadingProduct = false;
+                }),
+                takeUntilDestroyed(this.destroyRef),
+            )
+            .subscribe({
+                next: (products) => {
+                    const product = products.find((item) => item.id === productId);
+
+                    if (!product) {
+                        this.errorMessage.value = 'No se encontró el producto solicitado.';
+                        return;
+                    }
+
+                    this.originalProduct = { ...product };
+
+                    this.productForm.patchValue(
+                        {
+                            id: product.id,
+                            name: product.name,
+                            description: product.description,
+                            logo: product.logo,
+                            date_release: product.date_release,
+                            date_revision: product.date_revision,
+                        },
+                        { emitEvent: false },
+                    );
+
+                    this.productForm.controls.id.disable({ emitEvent: false });
+                    this.productForm.controls.date_release.clearValidators();
+                    this.productForm.controls.date_release.addValidators(Validators.required);
+                    this.productForm.controls.date_release.updateValueAndValidity({ emitEvent: false });
+                    this.logoPreview = product.logo;
+                    this.productForm.markAsPristine();
+                },
+                error: () => {
+                    this.errorMessage.value = 'No fue posible cargar el producto. Intenta nuevamente.';
+                },
+            });
     }
 
     private validateProductId(control: AbstractControl): Observable<ValidationErrors | null> {
@@ -229,6 +296,9 @@ export class ProductFormComponent {
         if (this.isSubmitting.value) {
             return;
         }
+        if (this.isLoadingProduct) {
+            return;
+        }
         if (this.productForm.pending) {
             this.productForm.statusChanges
                 .pipe(
@@ -237,25 +307,28 @@ export class ProductFormComponent {
                     takeUntilDestroyed(this.destroyRef),
                 )
                 .subscribe(() => {
-                    this.createProductIfValid();
+                    this.saveProductIfValid();
                 });
             return;
         }
-        this.createProductIfValid();
+        this.saveProductIfValid();
     }
 
     protected goBack(): void {
         this.location.back();
     }
 
-    private createProductIfValid(): void {
+    private saveProductIfValid(): void {
         if (this.isSubmitting.value || this.productForm.invalid || this.productForm.pending) {
             return;
         }
+
         this.isSubmitting.value = true;
         const product = this.productForm.getRawValue() as Product;
-        this.productService
-            .createProduct(product)
+
+        const request = this.isEditMode ? this.productService.updateProduct(this.editingProductId, product) : this.productService.createProduct(product);
+
+        request
             .pipe(
                 finalize(() => {
                     this.isSubmitting.value = false;
@@ -264,7 +337,7 @@ export class ProductFormComponent {
             )
             .subscribe({
                 next: () => {
-                    this.successMessage.value = 'Producto agregado correctamente';
+                    this.successMessage.value = this.isEditMode ? 'Producto actualizado correctamente' : 'Producto agregado correctamente';
 
                     timer(1200)
                         .pipe(takeUntilDestroyed(this.destroyRef))
@@ -273,12 +346,63 @@ export class ProductFormComponent {
                         });
                 },
                 error: () => {
-                    this.errorMessage.value = 'No fue posible registrar el producto. Intenta nuevamente.';
+                    this.errorMessage.value = this.isEditMode
+                        ? 'No fue posible actualizar el producto. Intenta nuevamente.'
+                        : 'No fue posible registrar el producto. Intenta nuevamente.';
                 },
             });
     }
 
+    protected openLogoModal(): void {
+        if (this.logoPreview) {
+            this.isLogoModalOpen = true;
+        }
+    }
+
+    protected closeLogoModal(): void {
+        this.isLogoModalOpen = false;
+    }
+
     protected resetForm(): void {
+        this.logoError = '';
+        this.successMessage.value = '';
+        this.errorMessage.value = '';
+        this.isLogoModalOpen = false;
+
+        if (this.isEditMode) {
+            if (!this.originalProduct) {
+                this.errorMessage.value = 'No se pudieron recuperar los datos originales del producto.';
+                return;
+            }
+
+            const original = this.originalProduct;
+
+            this.productForm.controls.id.setValue(original.id, { emitEvent: false });
+            this.productForm.controls.name.setValue(original.name, { emitEvent: false });
+            this.productForm.controls.description.setValue(original.description, { emitEvent: false });
+            this.productForm.controls.logo.setValue(original.logo, { emitEvent: false });
+            this.productForm.controls.date_release.setValue(original.date_release, { emitEvent: false });
+            this.productForm.controls.date_revision.setValue(original.date_revision, { emitEvent: false });
+
+            this.productForm.controls.id.disable({ emitEvent: false });
+            this.productForm.controls.date_revision.disable({ emitEvent: false });
+            this.logoPreview = original.logo;
+
+            if (this.logoInput) {
+                this.logoInput.nativeElement.value = '';
+            }
+
+            Object.values(this.productForm.controls).forEach((control) => {
+                control.markAsPristine();
+                control.markAsUntouched();
+            });
+
+            this.productForm.markAsPristine();
+            this.productForm.markAsUntouched();
+            this.productForm.updateValueAndValidity({ emitEvent: false });
+            return;
+        }
+
         this.productForm.reset({
             id: '',
             name: '',
@@ -287,9 +411,11 @@ export class ProductFormComponent {
             date_release: '',
             date_revision: '',
         });
+
         this.logoPreview = '';
-        this.logoError = '';
-        this.successMessage.value = '';
-        this.errorMessage.value = '';
+
+        if (this.logoInput) {
+            this.logoInput.nativeElement.value = '';
+        }
     }
 }

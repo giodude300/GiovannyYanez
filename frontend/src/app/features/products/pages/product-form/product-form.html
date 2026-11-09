@@ -1,9 +1,18 @@
 <div class="page-container">
+    @if (isLoadingProduct) {
+        <div class="processing-overlay" role="status" aria-live="polite">
+            <div class="processing-card">
+                <div class="processing-spinner"></div>
+                <p>Cargando producto...</p>
+                <span>Por favor, espera un momento.</span>
+            </div>
+        </div>
+    }
     @if (isSubmitting.value) {
         <div class="processing-overlay" role="status" aria-live="polite">
             <div class="processing-card">
                 <div class="processing-spinner"></div>
-                <p>Creando producto...</p>
+                <p>{{ isEditMode ? 'Actualizando producto...' : 'Creando producto...' }}</p>
                 <span>Por favor, espera un momento.</span>
             </div>
         </div>
@@ -17,7 +26,7 @@
     <main class="main-content">
         <section class="form-container">
             <button type="button" class="back-button" (click)="goBack()">← Volver</button>
-            <h1>Formulario de Registro</h1>
+            <h1>{{ isEditMode ? 'Formulario de Edición' : 'Formulario de Registro' }}</h1>
             <form [formGroup]="productForm" (ngSubmit)="submitForm()" novalidate>
                 <div class="form-grid">
                     <div class="form-field">
@@ -53,6 +62,7 @@
                     <div class="form-field">
                         <label for="logo">Logo</label>
                         <input
+                            #logoInput
                             id="logo"
                             type="file"
                             accept="image/png,image/jpeg,image/webp"
@@ -60,9 +70,10 @@
                             [class.invalid]="isFieldInvalid('logo') || !!logoError"
                         />
                         @if (logoPreview) {
-                            <div class="logo-preview">
+                            <button type="button" class="logo-preview" (click)="openLogoModal()" aria-label="Ampliar imagen del logo">
                                 <img [src]="logoPreview" alt="Vista previa del logo" />
-                            </div>
+                                <span class="logo-preview-hint">Ver imagen</span>
+                            </button>
                         }
                         @if (logoError) {
                             <span class="field-error">
@@ -115,12 +126,21 @@
                     </div>
                 }
                 <div class="form-actions">
-                    <button type="button" class="reset-button" (click)="resetForm()" [disabled]="isSubmitting.value">Reiniciar</button>
+                    <button type="button" class="reset-button" (click)="resetForm()" [disabled]="isSubmitting.value">{{ isEditMode ? 'Restablecer' : 'Reiniciar' }}</button>
                     <button type="submit" class="submit-button" [disabled]="isSubmitting.value || productForm.pending">
-                        {{ isSubmitting.value ? 'Enviando...' : productForm.pending ? 'Verificando ID...' : 'Enviar' }}
+                        {{ isSubmitting.value ? 'Guardando...' : productForm.pending ? 'Verificando ID...' : isEditMode ? 'Guardar cambios' : 'Enviar' }}
                     </button>
                 </div>
             </form>
         </section>
+
+        @if (isLogoModalOpen && logoPreview) {
+            <div class="logo-modal" role="presentation" (click)="closeLogoModal()">
+                <div class="logo-modal-content" role="dialog" aria-modal="true" aria-label="Vista ampliada del logo" (click)="$event.stopPropagation()">
+                    <button type="button" class="logo-modal-close" (click)="closeLogoModal()" aria-label="Cerrar imagen">×</button>
+                    <img [src]="logoPreview" alt="Imagen ampliada del logo" />
+                </div>
+            </div>
+        }
     </main>
 </div>

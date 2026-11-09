@@ -4,7 +4,7 @@ import { Observable, map } from 'rxjs';
 
 import { Product, ProductsResponse } from '../models/product.model';
 
-interface CreateProductResponse {
+interface ProductResponse {
     message: string;
     data: Product;
 }
@@ -24,7 +24,11 @@ export class ProductService {
         return this.http.get<boolean>(`${this.apiUrl}/verification/${encodeURIComponent(id)}`);
     }
 
-    createProduct(product: Product): Observable<CreateProductResponse> {
-        return this.http.post<CreateProductResponse>(this.apiUrl, product);
+    createProduct(product: Product): Observable<ProductResponse> {
+        return this.http.post<ProductResponse>(this.apiUrl, product);
+    }
+
+    updateProduct(id: string, product: Product): Observable<ProductResponse> {
+        return this.http.put<ProductResponse>(`${this.apiUrl}/${encodeURIComponent(id)}`, product);
     }
 }
