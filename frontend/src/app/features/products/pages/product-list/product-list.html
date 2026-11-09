@@ -8,7 +8,7 @@
     <main class="main-content">
         <section class="products-container">
             <div class="table-toolbar">
-                <input type="text" placeholder="Search..." aria-label="Buscar productos" disabled />
+                <input type="text" placeholder="Search..." aria-label="Buscar productos" [value]="searchTerm()" (input)="onSearch($event)" />
             </div>
 
             @if (isLoading()) {
@@ -19,8 +19,14 @@
 
                     <button type="button" (click)="retry()">Reintentar</button>
                 </div>
-            } @else if (products().length === 0) {
-                <div class="empty-state">No se encontraron productos financieros.</div>
+            } @else if (filteredProducts().length === 0) {
+                <div class="empty-state">
+                    @if (searchTerm().trim()) {
+                        No se encontraron productos que coincidan con la búsqueda.
+                    } @else {
+                        No se encontraron productos financieros.
+                    }
+                </div>
             } @else {
                 <div class="table-wrapper">
                     <table>
@@ -50,19 +56,15 @@
                         </thead>
 
                         <tbody>
-                            @for (product of products(); track product.id) {
+                            @for (product of filteredProducts(); track product.id) {
                                 <tr>
                                     <td>
                                         <img class="product-logo" [src]="product.logo" [alt]="'Logo de ' + product.name" />
                                     </td>
                                     <td>{{ product.name }}</td>
                                     <td>{{ product.description }}</td>
-                                    <td>
-                                        {{ product.date_release | date: 'dd/MM/yyyy' }}
-                                    </td>
-                                    <td>
-                                        {{ product.date_revision | date: 'dd/MM/yyyy' }}
-                                    </td>
+                                    <td>{{ product.date_release | date: 'dd/MM/yyyy' }}</td>
+                                    <td>{{ product.date_revision | date: 'dd/MM/yyyy' }}</td>
                                 </tr>
                             }
                         </tbody>
@@ -70,7 +72,7 @@
                 </div>
 
                 <div class="products-mobile">
-                    @for (product of products(); track product.id) {
+                    @for (product of filteredProducts(); track product.id) {
                         <article class="product-card">
                             <div class="product-card-header">
                                 <img class="product-logo" [src]="product.logo" [alt]="'Logo de ' + product.name" />
@@ -86,16 +88,12 @@
                                 <div class="product-card-dates">
                                     <div class="product-card-field">
                                         <span>Fecha de liberación</span>
-                                        <p>
-                                            {{ product.date_release | date: 'dd/MM/yyyy' }}
-                                        </p>
+                                        <p>{{ product.date_release | date: 'dd/MM/yyyy' }}</p>
                                     </div>
 
                                     <div class="product-card-field">
                                         <span>Fecha de reestructuración</span>
-                                        <p>
-                                            {{ product.date_revision | date: 'dd/MM/yyyy' }}
-                                        </p>
+                                        <p>{{ product.date_revision | date: 'dd/MM/yyyy' }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -105,7 +103,7 @@
             }
 
             <div class="table-footer">
-                <span>{{ products().length }} Resultados</span>
+                <span>{{ filteredProducts().length }} Resultados</span>
 
                 <label>
                     <select disabled aria-label="Cantidad de registros">
