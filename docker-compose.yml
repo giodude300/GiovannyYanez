@@ -1,0 +1,28 @@
+services:
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile
+        container_name: financial-products-backend
+        restart: unless-stopped
+        ports:
+            - "3002:3002"
+        networks:
+            - financial-products-network
+
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        container_name: financial-products-frontend
+        restart: unless-stopped
+        ports:
+            - "4200:80"
+        depends_on:
+            - backend
+        networks:
+            - financial-products-network
+
+networks:
+    financial-products-network:
+        driver: bridge
