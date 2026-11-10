@@ -75,6 +75,53 @@ docker compose logs -f frontend
 docker compose logs -f backend
 ```
 
+
+### Pruebas automatizadas y cobertura
+
+El frontend cuenta con una suite de pruebas automatizadas ejecutada con Vitest y las herramientas de testing de Angular.
+
+**Última ejecución reportada:**
+- Archivos de prueba: 5 aprobados.
+- Pruebas: 98 aprobadas de 98 ejecutadas.
+- Statements: 94.94%.
+- Branches: 92.89%.
+- Functions: 90.35%.
+- Lines: 96.81%.
+
+#### Distribución de pruebas
+
+| Suite | Pruebas |
+|---|---:|
+| App | 1 |
+| ProductService | 6 |
+| ProductFormComponent | 55 |
+| Validadores de ProductForm | 9 |
+| ProductListComponent | 27 |
+| **Total** | **98** |
+
+#### Cobertura por área
+
+| Archivo / área | Statements | Branches | Functions | Lines |
+|---|---:|---:|---:|---:|
+| App | 100% | 90% | 100% | 100% |
+| ProductService | 100% | 100% | 100% | 100% |
+| ProductForm HTML | 89.44% | 89.47% | 88.88% | 92% |
+| ProductForm TypeScript | 95.45% | 90.69% | 91.66% | 95.75% |
+| Validadores ProductForm | 100% | 100% | 100% | 100% |
+| ProductList HTML | 96.09% | 100% | 70.58% | 100% |
+| ProductList TypeScript | 98.01% | 96.87% | 96.55% | 98.91% |
+
+#### Ejecutar las pruebas
+
+Desde la carpeta del frontend:
+
+```bash
+npm run test:coverage
+```
+
+El comando ejecuta las pruebas y genera el reporte de cobertura configurado por el proyecto.
+
+
 ---
 
 ## English
@@ -150,3 +197,49 @@ docker compose logs -f frontend
 ```bash
 docker compose logs -f backend
 ```
+
+### Automated Tests and Coverage
+
+The frontend includes an automated test suite executed with Vitest and Angular testing utilities.
+
+**Latest reported execution:**
+- Test files: 5 passed.
+- Tests: 98 passed out of 98 executed.
+- Statements: 94.94%.
+- Branches: 92.89%.
+- Functions: 90.35%.
+- Lines: 96.81%.
+
+#### Test distribution
+
+| Suite | Tests |
+|---|---:|
+| App | 1 |
+| ProductService | 6 |
+| ProductFormComponent | 55 |
+| ProductForm validators | 9 |
+| ProductListComponent | 27 |
+| **Total** | **98** |
+
+#### Coverage by area
+
+| File / area | Statements | Branches | Functions | Lines |
+|---|---:|---:|---:|---:|
+| App | 100% | 90% | 100% | 100% |
+| ProductService | 100% | 100% | 100% | 100% |
+| ProductForm HTML | 89.44% | 89.47% | 88.88% | 92% |
+| ProductForm TypeScript | 95.45% | 90.69% | 91.66% | 95.75% |
+| ProductForm validators | 100% | 100% | 100% | 100% |
+| ProductList HTML | 96.09% | 100% | 70.58% | 100% |
+| ProductList TypeScript | 98.01% | 96.87% | 96.55% | 98.91% |
+
+#### Run the tests
+
+From the frontend directory:
+
+```bash
+npm run test:coverage
+```
+
+This command runs the test suite and generates the coverage report configured by the project.
+
